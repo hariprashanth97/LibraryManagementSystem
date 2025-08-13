@@ -17,9 +17,10 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
+          distribution: 'temurin'
 
       - name: Build with Maven
-        run: mvn clean package -DskipTests
+        run: mvn clean package
 
       - name: Build Docker image
         run: docker build -t your-dockerhub-username/library-api:latest .
@@ -31,7 +32,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push Docker image
-        run: docker push your-dockerhub-username/library-api:latest
+        run: docker push techwarriors/library:latest
 
       # Optional: Deploy to Kubernetes
       - name: Set up kubectl
@@ -40,6 +41,6 @@ jobs:
           version: 'v1.27.3'
 
       - name: Deploy to K8s
-        run: kubectl apply -f k8s/library-api-deployment.yaml
+        run: kubectl apply -f k8s/deployment.yaml
         env:
           KUBECONFIG: ${{ secrets.KUBECONFIG }}
