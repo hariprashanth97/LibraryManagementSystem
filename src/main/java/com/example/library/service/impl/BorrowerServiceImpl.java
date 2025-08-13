@@ -93,8 +93,12 @@ public class BorrowerServiceImpl implements BorrowerService {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
 
-        if (book.getBorrower() == null || !book.getBorrower().getId().equals(borrowerId)) {
-            throw new BookAlreadyReturnedException("This book is already returned");
+        if (book.getBorrower() == null) {
+            throw new BookNotBorrowedException("This book has not been borrowed yet");
+        }
+
+        if (!book.getBorrower().getId().equals(borrowerId)) {
+            throw new BookAlreadyReturnedException("This book is borrowed by another user or already returned");
         }
 
         book.setBorrower(null);

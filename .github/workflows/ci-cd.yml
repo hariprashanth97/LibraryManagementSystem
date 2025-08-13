@@ -43,7 +43,25 @@ jobs:
         with:
           version: 'v1.27.3'
 
-      - name: Deploy to K8s
-        run: kubectl apply -f k8s/deployment.yaml
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+      - name: Set up kubeconfig
+        run: |
+          echo "${{ secrets.KUBECONFIG_CONTENT }}" > kubeconfig
+          export KUBECONFIG=$PWD/kubeconfig
+          kubectl config use-context arn:aws:eks:ap-south-1:123456789012:cluster/interesting-disco-crow
+          kubectl get nodes
+
+      - name: Deploy MySQL
+        run: |
+          export KUBECONFIG=$PWD/kubeconfig
+          kubectl apply -f k8s/mysql-deployment.yaml
+          kubectl apply -f k8s/mysql-service.yaml
+          # wait for MySQL pod to be ready
+          kubectl wait --for=condition=ready pod -l app=mysql --timeout=120s
+
+      - name: Deploy Library API
+        run: |
+          export KUBECONFIG=$PWD/kubeconfig
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+          # wait for app deployment to be ready
+          kubectl rollout status deployment/library-api
