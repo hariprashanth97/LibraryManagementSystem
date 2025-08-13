@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: library
+      MYSQL_USER: appuser        # <--- use a normal user, not root
+      MYSQL_PASSWORD: apppass
+      MYSQL_ROOT_PASSWORD: rootpass
+    ports:
+      - "3306:3306"
+    command: --default-authentication-plugin=mysql_native_password
+
+  app:
+    build: .
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      JDBC_DATABASE_URL: jdbc:mysql://db:3306/library
+      JDBC_DATABASE_USERNAME: appuser   # <--- use the regular user here
+      JDBC_DATABASE_PASSWORD: apppass
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
