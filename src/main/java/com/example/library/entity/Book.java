@@ -31,4 +31,7 @@ public class Book {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "borrower_id")
     private Borrower borrower;
+
+    @Version
+    private Integer version;
 }

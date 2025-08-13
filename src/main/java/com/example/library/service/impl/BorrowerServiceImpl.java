@@ -31,6 +31,9 @@ public class BorrowerServiceImpl implements BorrowerService {
      */
     @Override
     public BorrowerResponse create(Borrower borrower) {
+        if (borrowerRepository.existsByEmail(borrower.getEmail())) {
+            throw new DuplicateBorrowerException("Email already exists: " + borrower.getEmail());
+        }
         Borrower saved = borrowerRepository.save(borrower);
         return Mapper.toBorrowerResponse(saved, null,null);
     }
@@ -78,7 +81,7 @@ public class BorrowerServiceImpl implements BorrowerService {
             return Mapper.toBorrowerResponse(borrower,bookResponse,"Book Borrowed Successfully");
 
         } catch (OptimisticLockingFailureException ex) {
-            throw new ConflictException("Concurrent modification while borrowing");
+            throw new ConflictException("Book was borrowed by someone else, try again");
         }
     }
 

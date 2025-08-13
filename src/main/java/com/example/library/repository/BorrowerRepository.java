@@ -6,4 +6,7 @@ import java.util.Optional;
 
 public interface BorrowerRepository extends JpaRepository<Borrower, Long> {
     Optional<Borrower> findByEmail(String email);
+
+    boolean existsByEmail(String email);
+
 }

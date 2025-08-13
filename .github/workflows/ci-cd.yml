@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ap-south-1  # your EKS region
 
     steps:
       - name: Checkout code
@@ -38,29 +40,31 @@ jobs:
       - name: Push Docker image
         run: docker push techwarriors/library-api:${{ env.VERSION }}
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
         with:
           version: 'v1.27.3'
 
-      - name: Set up kubeconfig
+      - name: Generate kubeconfig for EKS
         run: |
-          echo "${{ secrets.KUBECONFIG_CONTENT }}" > kubeconfig
-          export KUBECONFIG=$PWD/kubeconfig
+          aws eks update-kubeconfig --name interesting-disco-crow --region $AWS_REGION
           kubectl get nodes
 
       - name: Deploy MySQL
         run: |
-          export KUBECONFIG=$PWD/kubeconfig
           kubectl apply -f k8s/mysql-deployment.yaml
           kubectl apply -f k8s/mysql-service.yaml
-          # wait for MySQL pod to be ready
           kubectl wait --for=condition=ready pod -l app=mysql --timeout=120s
 
       - name: Deploy Library API
         run: |
-          export KUBECONFIG=$PWD/kubeconfig
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
-          # wait for app deployment to be ready
           kubectl rollout status deployment/library-api

@@ -36,6 +36,11 @@ public class RestExceptionHandler {
         ));
     }
 
+    @ExceptionHandler(DuplicateBorrowerException.class)
+    public ResponseEntity<Object> handleDuplicateBorrower(DuplicateBorrowerException ex) {
+        return buildResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Object> handleNotFound(ResourceNotFoundException ex) {
         return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
