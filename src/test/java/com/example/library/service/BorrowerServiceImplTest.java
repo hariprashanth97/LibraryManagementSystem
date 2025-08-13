@@ -153,6 +153,6 @@ class BorrowerServiceImplTest {
         when(borrowerRepository.findById(1L)).thenReturn(Optional.of(borrower));
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book)); // no borrower set
 
-        assertThrows(BookAlreadyReturnedException.class, () -> borrowerService.returnBook(1L, 1L));
+        assertThrows(BookNotBorrowedException.class, () -> borrowerService.returnBook(1L, 1L));
     }
 }

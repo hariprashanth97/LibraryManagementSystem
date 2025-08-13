@@ -106,7 +106,7 @@ class BorrowerControllerTest {
 
         mockMvc.perform(post("/api/borrowers/1/borrow/11"))
                 // depending on your @ControllerAdvice mapping; adjust if it’s 400/409
-                .andExpect(status().isConflict());
+                .andExpect(status().isUnprocessableEntity());
     }
 
     @Test
