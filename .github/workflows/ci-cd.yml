@@ -38,7 +38,6 @@ jobs:
       - name: Push Docker image
         run: docker push techwarriors/library-api:${{ env.VERSION }}
 
-      # Optional: Deploy to Kubernetes
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
         with:
