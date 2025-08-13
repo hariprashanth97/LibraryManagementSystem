@@ -47,7 +47,6 @@ jobs:
         run: |
           echo "${{ secrets.KUBECONFIG_CONTENT }}" > kubeconfig
           export KUBECONFIG=$PWD/kubeconfig
-          kubectl config use-context arn:aws:eks:ap-south-1:123456789012:cluster/interesting-disco-crow
           kubectl get nodes
 
       - name: Deploy MySQL
