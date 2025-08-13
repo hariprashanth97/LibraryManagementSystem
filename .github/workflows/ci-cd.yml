@@ -22,8 +22,12 @@ jobs:
       - name: Build with Maven
         run: mvn clean package
 
+      - name: Get Maven project version
+        id: get_version
+        run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+
       - name: Build Docker image
-        run: docker build -t your-dockerhub-username/library-api:latest .
+        run: docker build -t techwarriors/library-api:${{ env.VERSION }} .
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
